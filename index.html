@@ -1,1 +1,1262 @@
-index.html
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background: #f4f7f9;
+      color: #333;
+    }
+
+    h2, h3 {
+      color: #1a1a1a;
+      font-weight: 700;
+    }
+
+    .search-bar {
+      width: 100%;
+      max-width: 600px;
+      padding: 15px 25px;
+      border-radius: 30px;
+      border: 2px solid #e2e8f0;
+      outline: none;
+    }
+
+    .card-product {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border-left: 6px solid #007bff;
+      height: 100%;
+    }
+
+    .product-title {
+      font-size: 1.1em;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .badge-brand {
+      background: #e7f3ff;
+      color: #007bff;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.75em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .info-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.85em;
+      color: #666;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .badge-info-isi {
+      background: #fff4e5;
+      color: #d97706;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-weight: 700;
+    }
+
+    .calc {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    .hasil {
+      margin-top: 10px;
+      font-size: 0.8em;
+      color: #10b981;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .btn-add {
+      width: 100%;
+      margin-top: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 0.75em;
+      font-weight: 800;
+    }
+
+    td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.9em;
+    }
+
+    .total-row {
+      background: #f8fafc;
+      font-weight: 800;
+    }
+
+    .batch-area {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 40px;
+      border-top: 6px solid #6f42c1;
+    }
+
+    #batchInput {
+      width: 100%;
+      height: 150px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: monospace;
+      background: #f8fafc;
+    }
+
+    .total-box {
+      background: #6f42c1;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .total-box h4 {
+      margin: 0;
+      font-weight: 800;
+    }
+
+    @media(max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .search-bar {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+  <!-- HEADER -->
+  <div class="text-center py-4">
+
+    <h2>🔍 DASHBOARD PRODUCT INFO V2</h2>
+
+    <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
+
+      <input
+        type="text"
+        id="search"
+        class="search-bar"
+        placeholder="Cari kode, nama barang, atau barcode..."
+      >
+
+      <button
+        onclick="mulaiScan()"
+        class="btn btn-dark px-4 fw-bold rounded-pill"
+        style="height:52px; white-space:nowrap;"
+      >
+        📷 Scan Barcode
+      </button>
+
+    </div>
+
+    <div id="status-data"></div>
+
+  </div>
+
+
+  <!-- HASIL PENCARIAN -->
+  <div
+    id="result"
+    class="row row-cols-1 row-cols-md-3 g-4"
+  ></div>
+
+
+  <!-- KERANJANG -->
+  <div class="mt-5">
+
+    <h3>🧺 Keranjang Order</h3>
+
+    <div
+      class="table-container"
+      id="cart"
+    >
+      <div class="p-4 text-center text-muted">
+        Belum ada item di keranjang.
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- QUICK BATCH -->
+  <div class="batch-area">
+
+    <h3>🚀 Quick Batch Cubication</h3>
+
+    <p class="text-muted small">
+      Copas kolom <b>KODE, NAMA, QTY</b> dari Excel ke sini:
+    </p>
+
+    <div class="row">
+
+      <div class="col-md-8">
+
+        <textarea
+          id="batchInput"
+          placeholder="Contoh:
+KODE01    Barang A    10
+KODE02    Barang B    5"
+        ></textarea>
+
+        <button
+          onclick="prosesBatch()"
+          class="btn btn-primary mt-3 fw-bold w-100"
+        >
+          Hitung Total Kubikasi
+        </button>
+
+      </div>
+
+      <div class="col-md-4">
+
+        <div class="total-box">
+
+          <span>
+            ESTIMASI TOTAL KUBIKASI
+          </span>
+
+          <h4 id="grandTotalBatch">
+            0.000000 m³
+          </h4>
+
+        </div>
+
+        <div
+          id="batchLog"
+          class="mt-3 small text-danger"
+        ></div>
+
+      </div>
+
+    </div>
+
+    <div
+      id="batchResultTable"
+      class="mt-4 table-container d-none"
+    >
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>KODE & NAMA</th>
+            <th>QTY</th>
+            <th>UNIT M³</th>
+            <th>SUBTOTAL</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="batchBody"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let dataBarang = [];
+let cart = [];
+let lastBatchData = [];
+let timer = null;
+
+
+// =====================================================
+// LOAD DATA
+// =====================================================
+
+function loadData() {
+
+  const status =
+    document.getElementById("status-data");
+
+  status.innerHTML = `
+    <div class="text-center py-2">
+      <div class="spinner-border spinner-border-sm text-primary"></div>
+      <small class="text-muted ms-2">
+        Sedang sinkronisasi data...
+      </small>
+    </div>
+  `;
+
+
+  google.script.run
+
+    .withSuccessHandler(function(res) {
+
+      dataBarang = res || [];
+
+      status.innerHTML = `
+        <div class="alert alert-success d-inline-block py-1 px-3">
+          ✅ <b>DATA SIAP!</b>
+          ${dataBarang.length} barang berhasil dimuat.
+        </div>
+      `;
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      status.innerHTML = `
+        <div class="alert alert-danger">
+          ❌ Gagal mengambil data:
+          ${err.message}
+        </div>
+      `;
+
+    })
+
+    .getBarangData();
+
+}
+
+
+// =====================================================
+// SEARCH
+// =====================================================
+
+document
+  .getElementById("search")
+  .addEventListener("input", function() {
+
+    clearTimeout(timer);
+
+    timer = setTimeout(function() {
+
+      const val =
+        document
+          .getElementById("search")
+          .value
+          .toLowerCase()
+          .trim();
+
+      if (!val) {
+
+        document.getElementById("result").innerHTML = "";
+
+        return;
+      }
+
+
+      const filtered =
+        dataBarang.filter(function(b) {
+
+          return (
+
+            String(b.kode)
+              .toLowerCase()
+              .includes(val)
+
+            ||
+
+            String(b.nama)
+              .toLowerCase()
+              .includes(val)
+
+            ||
+
+            String(b.barcode)
+              .toLowerCase()
+              .includes(val)
+
+          );
+
+        });
+
+
+      render(filtered);
+
+    }, 250);
+
+  });
+
+
+// =====================================================
+// RENDER PRODUCT
+// =====================================================
+
+function render(list) {
+
+  const container =
+    document.getElementById("result");
+
+  container.innerHTML = "";
+
+
+  if (!list.length) {
+
+    container.innerHTML = `
+      <div class="col-12 text-center py-5">
+        <b>Barang tidak ditemukan 🔍</b>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  list.slice(0, 12).forEach(function(b) {
+
+    const isSupreme =
+      b.tipe === "roll" ||
+      String(b.brand)
+        .toUpperCase()
+        .includes("SUPREME");
+
+
+    const isLegrandConduit =
+      String(b.brand)
+        .toUpperCase()
+        .includes("LEGRAND")
+      &&
+      String(b.nama)
+        .toUpperCase()
+        .includes("CONDUIT");
+
+
+    let isiValue =
+      isSupreme
+        ? b.panjang
+        : b.isi;
+
+
+    if (
+      (isLegrandConduit ||
+       b.tipe.toLowerCase() === "ikat")
+      &&
+      isiValue <= 1
+    ) {
+
+      isiValue = 50;
+
+    }
+
+
+    const isiLabel =
+      isSupreme
+        ? "ISI PER ROLL"
+        :
+        (
+          b.tipe.toLowerCase() === "ikat"
+          || isLegrandConduit
+        )
+        ? "ISI PER IKAT"
+        : "ISI PER DUS";
+
+
+    const unitLabel =
+      isSupreme
+        ? "MTR"
+        :
+        (
+          b.tipe.toLowerCase() === "ikat"
+          || isLegrandConduit
+        )
+        ? "BTG"
+        : "PCS";
+
+
+    const col =
+      document.createElement("div");
+
+    col.className = "col";
+
+
+    col.innerHTML = `
+
+      <div class="card-product">
+
+        <span class="product-title">
+          ${b.nama}
+        </span>
+
+        <div class="badge-brand">
+          ${b.brand}
+        </div>
+
+        <div class="info-row">
+
+          <span>
+            KODE:
+            <b>${b.kode}</b>
+          </span>
+
+          <span class="badge-info-isi">
+
+            ${isiLabel}:
+            <b>${isiValue} ${unitLabel}</b>
+
+          </span>
+
+        </div>
+
+
+        <div class="calc">
+
+          <div class="row g-2">
+
+            <div class="col-6">
+
+              <label class="small fw-bold">
+                ITEM (${unitLabel})
+              </label>
+
+              <input
+                type="number"
+                class="pcs"
+                value="${isiValue}"
+              >
+
+            </div>
+
+
+            <div class="col-6">
+
+              <label class="small fw-bold">
+                JUMLAH DUS/ROLL
+              </label>
+
+              <input
+                type="number"
+                class="dus"
+                value="1"
+              >
+
+            </div>
+
+          </div>
+
+
+          <button class="btn-add">
+            ➕ TAMBAH
+          </button>
+
+
+          <div class="hasil"></div>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    container.appendChild(col);
+
+
+    const pIn =
+      col.querySelector(".pcs");
+
+    const dIn =
+      col.querySelector(".dus");
+
+    const btn =
+      col.querySelector(".btn-add");
+
+    const hasil =
+      col.querySelector(".hasil");
+
+
+    function sync(mode) {
+
+      let p =
+        Number(pIn.value) || 0;
+
+      let d =
+        Number(dIn.value) || 0;
+
+
+      if (mode === "p") {
+
+        d =
+          Math.ceil(p / isiValue);
+
+        dIn.value = d;
+
+      } else {
+
+        p =
+          d * isiValue;
+
+        pIn.value = p;
+
+      }
+
+
+      const displayDus =
+        (p % isiValue) > 0
+
+          ? `${Math.floor(p / isiValue)}
+             (${p % isiValue}${isSupreme ? "mtr" : "pcs"})`
+
+          : `${Math.floor(p / isiValue)}`;
+
+
+      hasil.innerHTML = `
+
+        TOTAL: ${p}
+        &nbsp; | &nbsp;
+
+        DUS/ROLL:
+        ${displayDus}
+
+        &nbsp; | &nbsp;
+
+        KUBIKASI:
+        ${(d * b.kubikasi).toFixed(4)}
+
+      `;
+
+
+      btn.dataset.displayDus =
+        displayDus;
+
+    }
+
+
+    pIn.oninput =
+      () => sync("p");
+
+    dIn.oninput =
+      () => sync("d");
+
+
+    sync("d");
+
+
+    btn.onclick = function(e) {
+
+      e.stopPropagation();
+
+
+      const idx =
+        cart.findIndex(
+          c => c.kode === b.kode
+        );
+
+
+      if (idx !== -1) {
+
+        cart.splice(idx, 1);
+
+      }
+
+
+      cart.push({
+
+        ...b,
+
+        pcs:
+          Number(pIn.value),
+
+        dus:
+          Number(dIn.value),
+
+        qtyDusDetail:
+          btn.dataset.displayDus,
+
+        kubik:
+          Number(dIn.value) *
+          b.kubikasi
+
+      });
+
+
+      renderCart();
+
+    };
+
+  });
+
+}
+
+
+// =====================================================
+// CART
+// =====================================================
+
+function renderCart() {
+
+  const el =
+    document.getElementById("cart");
+
+
+  if (!cart.length) {
+
+    el.innerHTML = `
+      <div class="p-4 text-center">
+        KERANJANG KOSONG
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  let totalP = 0;
+  let totalD = 0;
+  let totalK = 0;
+
+
+  let html = `
+
+    <div class="table-responsive">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>NO</th>
+            <th>NAMA BARANG</th>
+            <th>BRAND</th>
+            <th>QTY/MTR</th>
+            <th>DUS/ROLL</th>
+            <th>KUBIKASI</th>
+            <th>AKSI</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+  `;
+
+
+  cart.forEach(function(c, i) {
+
+    totalP += c.pcs;
+    totalD += c.dus;
+    totalK += c.kubik;
+
+
+    html += `
+
+      <tr>
+
+        <td class="text-center">
+          ${i + 1}
+        </td>
+
+        <td>
+          <b>${c.nama}</b>
+          <br>
+          <small>${c.kode}</small>
+        </td>
+
+        <td>
+          ${c.brand}
+        </td>
+
+        <td class="text-center">
+          ${c.pcs}
+        </td>
+
+        <td class="text-center">
+          ${c.qtyDusDetail}
+        </td>
+
+        <td class="text-end">
+          ${c.kubik.toFixed(4)}
+        </td>
+
+        <td class="text-center">
+
+          <button
+            class="btn btn-sm btn-danger"
+            onclick="hapusItem(${i})"
+          >
+            🗑️
+          </button>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html += `
+
+        </tbody>
+
+        <tfoot>
+
+          <tr class="total-row">
+
+            <td
+              colspan="3"
+              class="text-end"
+            >
+              TOTAL
+            </td>
+
+            <td class="text-center">
+              ${totalP}
+            </td>
+
+            <td class="text-center">
+              ${totalD}
+            </td>
+
+            <td class="text-end">
+              ${totalK.toFixed(4)}
+            </td>
+
+            <td></td>
+
+          </tr>
+
+        </tfoot>
+
+      </table>
+
+    </div>
+
+  `;
+
+
+  el.innerHTML = html;
+
+}
+
+
+function hapusItem(i) {
+
+  if (
+    confirm("Hapus item ini?")
+  ) {
+
+    cart.splice(i, 1);
+
+    renderCart();
+
+  }
+
+}
+
+
+// =====================================================
+// QUICK BATCH
+// =====================================================
+
+function prosesBatch() {
+
+  const input =
+    document.getElementById("batchInput").value;
+
+  const log =
+    document.getElementById("batchLog");
+
+  const body =
+    document.getElementById("batchBody");
+
+  const table =
+    document.getElementById("batchResultTable");
+
+  const totalDisplay =
+    document.getElementById("grandTotalBatch");
+
+
+  log.innerHTML = "";
+
+  body.innerHTML = "";
+
+  lastBatchData = [];
+
+
+  let totalSemua = 0;
+
+  let foundAny = false;
+
+
+  const rows =
+    input.split("\n");
+
+
+  rows.forEach(function(row) {
+
+    if (!row.trim()) return;
+
+
+    const cols =
+      row.split(/\t|\s{2,}/);
+
+
+    const kode =
+      cols[0].trim();
+
+
+    const qty =
+      Number(
+        cols[cols.length - 1].trim()
+      );
+
+
+    const spek =
+      dataBarang.find(
+        b =>
+          String(b.kode)
+            .toLowerCase()
+          ===
+          kode.toLowerCase()
+      );
+
+
+    if (
+      spek &&
+      !isNaN(qty)
+    ) {
+
+      const isSupreme =
+        spek.tipe === "roll" ||
+        String(spek.brand)
+          .toUpperCase()
+          .includes("SUPREME");
+
+
+      const isLegrandConduit =
+        String(spek.brand)
+          .toUpperCase()
+          .includes("LEGRAND")
+        &&
+        String(spek.nama)
+          .toUpperCase()
+          .includes("CONDUIT");
+
+
+      let isiBarang =
+        isSupreme
+          ? spek.panjang
+          : spek.isi;
+
+
+      const tipeBarang =
+        String(spek.tipe || "")
+          .toLowerCase();
+
+
+      if (
+        (isLegrandConduit ||
+         tipeBarang === "ikat")
+        &&
+        isiBarang <= 1
+      ) {
+
+        isiBarang = 50;
+
+      }
+
+
+      isiBarang =
+        Number(isiBarang) || 1;
+
+
+      const subTotal =
+        (qty / isiBarang) *
+        spek.kubikasi;
+
+
+      totalSemua +=
+        subTotal;
+
+
+      foundAny = true;
+
+
+      lastBatchData.push({
+
+        ...spek,
+
+        qty,
+
+        subTotal
+
+      });
+
+
+      const tr =
+        document.createElement("tr");
+
+
+      tr.innerHTML = `
+
+        <td>
+          <b>${spek.kode}</b>
+          <br>
+          <small>${spek.nama}</small>
+        </td>
+
+        <td class="text-center">
+          ${qty}
+        </td>
+
+        <td class="text-end">
+          ${spek.kubikasi}
+        </td>
+
+        <td class="text-end fw-bold">
+          ${subTotal.toFixed(6)}
+        </td>
+
+      `;
+
+
+      body.appendChild(tr);
+
+    }
+
+    else if (kode) {
+
+      log.innerHTML +=
+        `⚠️ Kode <b>${kode}</b>
+         tidak ketemu.<br>`;
+
+    }
+
+  });
+
+
+  if (foundAny) {
+
+    table.classList.remove("d-none");
+
+    totalDisplay.innerHTML =
+      totalSemua.toFixed(6) +
+      " m³";
+
+  }
+
+  else {
+
+    table.classList.add("d-none");
+
+    totalDisplay.innerHTML =
+      "0.000000 m³";
+
+  }
+
+}
+
+
+// =====================================================
+// BARCODE SCANNER
+// =====================================================
+
+function mulaiScan() {
+
+  google.script.run
+
+    .withSuccessHandler(function(url) {
+
+      if (!url) {
+
+        alert(
+          "URL scanner belum tersedia."
+        );
+
+        return;
+
+      }
+
+
+      // Buka scanner eksternal.
+      window.open(
+        url,
+        "_blank"
+      );
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        err.message
+      );
+
+    })
+
+    .getScannerUrl();
+
+}
+
+
+// =====================================================
+// TERIMA HASIL SCANNER
+// =====================================================
+
+// Scanner eksternal akan mengirim barcode
+// melalui BroadcastChannel.
+//
+// Ini digunakan jika dashboard dan scanner
+// berada pada browser yang sama.
+
+if ("BroadcastChannel" in window) {
+
+  const barcodeChannel =
+    new BroadcastChannel(
+      "product_info_barcode"
+    );
+
+
+  barcodeChannel.onmessage =
+    function(event) {
+
+      if (
+        event.data &&
+        event.data.barcode
+      ) {
+
+        prosesBarcode(
+          event.data.barcode
+        );
+
+      }
+
+    };
+
+}
+
+
+// =====================================================
+// PROSES BARCODE
+// =====================================================
+
+function prosesBarcode(decodedText) {
+
+  const barcode =
+    String(decodedText)
+      .trim()
+      .toLowerCase();
+
+
+  document.getElementById("search").value =
+    decodedText;
+
+
+  const matched =
+    dataBarang.filter(function(b) {
+
+      return (
+
+        String(b.kode)
+          .toLowerCase()
+          .trim()
+          === barcode
+
+        ||
+
+        String(b.barcode)
+          .toLowerCase()
+          .trim()
+          === barcode
+
+      );
+
+    });
+
+
+  render(matched);
+
+
+  if (!matched.length) {
+
+    alert(
+      'Barcode "' +
+      decodedText +
+      '" tidak ditemukan di database!'
+    );
+
+  }
+
+}
+
+
+// =====================================================
+// START
+// =====================================================
+
+loadData();
+
+</script>
+
+</body>
+</html>
